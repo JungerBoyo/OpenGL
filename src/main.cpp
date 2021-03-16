@@ -34,6 +34,8 @@ BufferManager Buffers;
 Camera* camera; int cam;
 Model* model; int mod; 
 
+int pos;
+
 void init()
 {   
     vao.GenVA(1);
@@ -95,21 +97,26 @@ void init()
     glm::mat4 mvp = glm::perspective(0.38f*M_PIf32, 1.0f, 0.5f, 10.0f);
     ASSERT(glUniformMatrix4fv(MVP, 1, GL_FALSE, &mvp[0][0]));
 
-    camera = new Camera({0.0f, 0.0f, -1.0f}, std::vector<float>(0), std::vector<glm::vec3>(0));
-    model = new Model({0.0f, 0.0f, -4.5f}, {{0.2f * M_PIf32}}, {{0.0f, 1.0f, 0.0f}});
+    camera = new Camera();
+    model = new Model({0.0f, 0.0f, -4.5f}, {{0.0f * M_PIf32}}, {{0.0f, 1.0f, 0.0f}});
 
     cam = glGetUniformLocation(program, "view");
-    ASSERT(glUniformMatrix4fv(cam, 1, GL_FALSE, &camera->GetActualCameraViewMat()[0][0]));
+    ASSERT(glUniformMatrix4fv(cam, 1, GL_FALSE, &camera->LookAt()[0][0]));
 
     mod = glGetUniformLocation(program, "model");
     ASSERT(glUniformMatrix4fv(mod, 1, GL_FALSE, &model->GetActualModelMat()[0][0]));
+
+    pos = glGetUniformLocation(program, "pos");
 }
 
 void Display()
 {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-    ASSERT(glUniformMatrix4fv(cam, 1, GL_FALSE, &camera->GetActualCameraViewMat()[0][0]));
+    glUniformMatrix4fv(cam, 1, GL_FALSE, &camera->GetActLookAtMat()[0][0]);
+    ASSERT(glUniform4fv(pos, 1, &(camera->GetActLookAtMat() * camera->GetCamPosition())[0]));
+    glUniformMatrix4fv(mod, 1, GL_FALSE, &model->GetActualModelMat()[0][0]);
+
     ASSERT(glDrawElements(GL_TRIANGLES, 36,  GL_UNSIGNED_INT, 0));
 }
 
@@ -130,23 +137,19 @@ int main(int argc, char** argv)
     init();
 
     KeyBoard* keyboard = new KeyBoard(camera);
-    keyboard -> KeyBoardEnable(ENABLE_WASD);
+    keyboard -> KeyBoardEnable(ENABLE_WASD|ENABLE_ARROWS);
+
+    Mouse* mouse = new Mouse(camera);
+    mouse -> MouseEnable(ENABLE_MOUSE);
 
     while(!WIN.isClosed)
     {
         Display();
-        SDL.EventPolling(keyboard);
+        SDL.EventPolling(keyboard, mouse);
+        model->UpdateModel(glm::vec3(0.0f,0.0f,0.0f), {0.01f, 0.005f}, {glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)});
         WIN.SwapBuffers();
     }
 
-
-
-
-    //glutDisplayFunc(Display);
-    
-    //glutKeyboardFunc(Input);
-    //glutMainLoop();
-//
     return 0;
 }
 

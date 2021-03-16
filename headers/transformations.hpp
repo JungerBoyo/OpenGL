@@ -6,44 +6,33 @@
 
 #include <vector>
 
-class TransformManager
+enum {CAM_FORWARD, CAM_BACKWARD, CAM_RIGHT, CAM_LEFT};
+
+class Camera 
 {
     public:
-        TransformManager();
-        glm::mat4 GetModelTransform(glm::vec3 translation, 
-                                    std::vector<float> rotAngles, 
-                                    std::vector<glm::vec3> rotAxises, 
-                                    glm::vec3 _scale = {1.0f, 1.0f, 1.0f});
-        
-        
-        
-        glm::mat4 GetViewTransform(glm::vec3 translation, 
-                                   std::vector<float> rotAngles, 
-                                   std::vector<glm::vec3> rotAxises);
+        inline Camera() {};
+
+        glm::mat4 LookAt();
+        void UpdateDirVec(float anglePitch, float angleHead);
+        void UpdatePos(int movType);
+
+        inline glm::vec4 GetCamPosition() const { return camPos; }
+        inline glm::mat4 GetActLookAtMat() const {return actLookAt; }
+
+    private:     
+        glm::mat4 actLookAt;
+        glm::vec4 camPos = {0.0f, 0.0f, 0.0f, 1.0f};
+
+        glm::vec4 dirVec = {0.0f, 0.0f, 1.0f, 0.0f};
+        const glm::vec3 worldUp = {0.0f, 1.0f, 0.0f};
+
+        float pitch = 0.0f;
+        float head = 0.0f;
 
 };
 
-class Camera : public TransformManager
-{
-    public:
-        Camera(glm::vec3 translation, 
-               std::vector<float> rotAngles, 
-               std::vector<glm::vec3> rotAxises);
-
-        void UpdateCamera(glm::vec3 translation, 
-                          std::vector<float> rotAngles = std::vector<float>(0), 
-                          std::vector<glm::vec3> rotAxises = std::vector<glm::vec3>(0));
-
-        inline glm::mat4 GetActualCameraViewMat() const { return actualCameraViewMat; } 
-        inline glm::vec3 GetActualCameraWorldCoords() const { return actualCameraWorldCoords; }
-
-    private:
-        glm::mat4 actualCameraViewMat = glm::mat4(1.0f);
-        glm::vec3 actualCameraWorldCoords;
-
-};
-
-class Model : public TransformManager
+class Model
 {
     public:
       public:
@@ -62,7 +51,7 @@ class Model : public TransformManager
 
     private:
         glm::mat4 actualModelMat = glm::mat4(1.0f);
-        glm::vec3 actualModelWorldCoords;
+        glm::vec3 actualModelWorldCoords = glm::vec3(0.0f);
 };
 
 #endif

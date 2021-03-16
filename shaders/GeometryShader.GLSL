@@ -11,6 +11,7 @@ in VS_OUT
 out vec4 fColor;
 
 uniform mat4 MVP;
+uniform vec4 camPos;
 
 void main()
 {
@@ -19,7 +20,7 @@ void main()
 
     vec3 normal = normalize(cross(a,b));
 
-    if(dot(normal,vec3(gl_in[0].gl_Position)) < 0)
+    if(dot(normal,vec3(gl_in[1].gl_Position) - vec3(camPos)) < 0)
     {
         fColor = gs_in[0].fColor;
         gl_Position = (gl_in[0].gl_Position+vec4(0.0, 0.0, 0.0, 0.0))*MVP;

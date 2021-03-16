@@ -1,8 +1,9 @@
 #include "../headers/SDLManager.hpp"
+#include <iostream>
 
-SDLManager :: SDLManager() {}
+SDLManager::SDLManager() {}
 
-void SDLManager :: InitSDL()
+void SDLManager::InitSDL()
 {
     SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -15,97 +16,83 @@ void SDLManager :: InitSDL()
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 }
 
-void SDLManager :: EventPolling(KeyBoard* _virtualKeyBoard, Mouse* _MouseInput)
+void SDLManager::EventPolling(KeyBoard* _virtualKeyBoard, Mouse* _virtualMouse)
 {
     SDL_Event event;
 
     while(SDL_PollEvent(&event))
     {
-        if(event.key.keysym.sym == 'q')
-            actualWindow->isClosed = true;
-
-        switch(event.type)
+        if(!MouseMode)
         {
-            case SDL_QUIT: actualWindow->isClosed = true; break;
-            case SDL_KEYDOWN: if(_virtualKeyBoard != NULL) _virtualKeyBoard->KeyDownAction(&event); break;
+            switch(event.type)
+            {
+                case SDL_QUIT: actualWindow->isClosed = true; break;
+                case SDL_KEYDOWN: if(_virtualKeyBoard != NULL) _virtualKeyBoard->KeyDownAction(&event); break;
+                case SDL_MOUSEBUTTONDOWN: 
+                                if(_virtualMouse != NULL) 
+                                {
+                                   MouseMode = true; 
+                                   SDL_GetMouseState(&_virtualMouse->data->anchorCoordX, &_virtualMouse->data->anchorCoordY);  
+                                }
+                            break;
+            }
         }
+        else
+            if(event.type == SDL_MOUSEBUTTONUP)
+                MouseMode = false;
+            else
+                _virtualMouse->ButtonDownAction(&event);
     }
 }
 
-void SDLWindow :: InitOpenGLWindow()
+void SDLWindow::InitOpenGLWindow()
 {
-    this-> win = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 500,  SDL_WINDOW_OPENGL);
+    this-> win = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 1000,  SDL_WINDOW_OPENGL);
     this-> context = SDL_GL_CreateContext(win); 
 }
 
-SDLWindow :: SDLWindow()
+SDLWindow::SDLWindow()
 {
     this->InitOpenGLWindow();
 }
 
-SDLWindow :: ~SDLWindow()
+SDLWindow::~SDLWindow()
 {
     SDL_GL_DeleteContext(context);
     SDL_DestroyWindow(win);
     SDL_Quit();
 }
 
-void KeyBoard :: KeyDownAction(SDL_Event* _event)
+void KeyBoard::KeyDownAction(SDL_Event* _event)
 {
-    if(functionality->MovCtrl1 != NULL)
-        (this->*functionality->MovCtrl1)(_event, 0.4f);
+    if(this->functionality->MovCtrl1 != NULL)
+        (this->*functionality->MovCtrl1)(_event);
     
-    if(functionality->MovCtrl2 != NULL)
-        (this->*functionality->MovCtrl2)(_event, 0.4f);
+    if(this->functionality->MovCtrl2 != NULL)
+        (this->*functionality->MovCtrl2)(_event);
 }
 
-void KeyBoard :: WASD(SDL_Event* _event, float _rapidity)
+void KeyBoard::WASD(SDL_Event* _event)
 {
     switch(_event->key.keysym.sym)
     {
-        case 'w': case 'W':  
-                actualCamBind -> UpdateCamera(glm::vec3(0.0f, 0.0f, _rapidity));
-            break;
-        
-        case 'a': case 'A': 
-                actualCamBind -> UpdateCamera(glm::vec3(_rapidity, 0.0f, 0.0f));
-            break;
-        
-        case 's': case 'S': 
-                actualCamBind -> UpdateCamera(glm::vec3(0.0f, 0.0f,-_rapidity));
-            break;
-        
-        case 'd': case 'D': 
-                actualCamBind -> UpdateCamera(glm::vec3(-_rapidity, 0.0f, 0.0f));
-            break;
-        
-        default: 
-            break;
+        case 'w': case 'W': actualCamBind -> UpdatePos(CAM_FORWARD); break;
+        case 'a': case 'A': actualCamBind -> UpdatePos(CAM_LEFT); break;
+        case 's': case 'S': actualCamBind -> UpdatePos(CAM_BACKWARD); break;
+        case 'd': case 'D': actualCamBind -> UpdatePos(CAM_RIGHT); break; 
+        default: break;
     }
 }
 
-void KeyBoard :: ARROWS(SDL_Event* _event, float _rapidity)
+void KeyBoard::ARROWS(SDL_Event* _event)
 {
     switch(_event->key.keysym.sym)
     {
-        case SDLK_UP: 
-                actualCamBind -> UpdateCamera(glm::vec3(0.0f, 0.0f, _rapidity));
-            break;
-        
-        case SDLK_LEFT: 
-                actualCamBind -> UpdateCamera(glm::vec3(_rapidity, 0.0f, 0.0f));
-            break;
-        
-        case SDLK_DOWN: 
-                actualCamBind -> UpdateCamera(glm::vec3(0.0f, 0.0f,-_rapidity));
-            break;
-        
-        case SDLK_RIGHT: 
-                actualCamBind -> UpdateCamera(glm::vec3(-_rapidity, 0.0f, 0.0f));
-            break;
-        
-        default: 
-            break;
+        case SDLK_UP: actualCamBind -> UpdatePos(CAM_FORWARD); break;    
+        case SDLK_LEFT: actualCamBind -> UpdatePos(CAM_LEFT); break;
+        case SDLK_DOWN: actualCamBind -> UpdatePos(CAM_BACKWARD); break;
+        case SDLK_RIGHT: actualCamBind -> UpdatePos(CAM_RIGHT); break;
+        default: break;
     }
 }
 
@@ -130,7 +117,37 @@ void KeyBoard::KeyBoardEnable(int _enable)
 
             default: break;
         }
+    
+        enabled = _enable;
     }
+}
 
-    enabled = _enable;
+void Mouse::ButtonDownAction(SDL_Event* _event)
+{    
+    if(this->functionality->MovCtrl1 != NULL)
+        (this->*functionality->MovCtrl1)(_event);        
+}
+
+void Mouse::LookAround(SDL_Event* _event)
+{
+    int mouseCoordX;
+    int mouseCoordY;
+
+    if(_event->type == SDL_MOUSEMOTION)
+    {
+        SDL_GetMouseState(&mouseCoordX, &mouseCoordY);
+
+        actualCamBind -> 
+            UpdateDirVec(0.00005f*(mouseCoordY - data->anchorCoordY), 
+                         0.00005f*(mouseCoordX - data->anchorCoordX));                
+    }
+}
+
+void Mouse::MouseEnable(int _enable)
+{
+    if(_enable == 1)
+    {
+        this->functionality->MovCtrl1 = &Mouse::LookAround;
+        enabled = _enable;
+    }
 }

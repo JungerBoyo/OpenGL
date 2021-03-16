@@ -6,6 +6,7 @@ layout(location = 1) in vec4 vColor;
 uniform mat4 MVP;
 uniform mat4 view;
 uniform mat4 model;
+uniform vec4 camPos;
 
 out VS_OUT
 {
@@ -14,8 +15,7 @@ out VS_OUT
 
 void main()
 {
-
     gl_Position = view*model*vPosition;
-
     vs_out.fColor = vColor;
+    
 };
