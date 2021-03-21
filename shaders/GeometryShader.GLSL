@@ -8,7 +8,7 @@ in VS_OUT
     vec4 fColor;
 }gs_in[];
 
-out vec4 fColor;
+sample out vec4 fColor;
 
 uniform mat4 MVP;
 uniform vec4 camPos;

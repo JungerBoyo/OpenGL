@@ -9,7 +9,7 @@
 
 class BufferManager
 {
-    public: 
+    protected: 
         BufferManager();
         ~BufferManager();
 
@@ -18,17 +18,17 @@ class BufferManager
         void UnbindBuffer(GLenum bufferType);
 
         template<typename DataType>
-        void PushData(GLenum bufferType, DataType data, GLenum usage = GL_STATIC_DRAW);
+        void PushData(GLenum bufferType, GLsizeiptr sizeOfData, DataType data, GLenum usage = GL_STATIC_DRAW);
 
         template<typename DataType>
-        void PushData(GLuint bufferIndex, GLuint bufferType, DataType data, GLenum usage = GL_STATIC_DRAW);
+        void PushData(GLuint bufferIndex,  GLuint bufferType, DataType data, GLenum usage = GL_STATIC_DRAW);
 
         void AllocateData(GLuint bufferType, GLsizeiptr sizeOfData, GLenum usage = GL_STATIC_DRAW);
 
         template<typename DataType>
-        void PushSubdata(GLenum bufferType, DataType data, GLenum usage, GLintptr offset);
+        void PushSubdata(GLenum bufferType, GLsizeiptr sizeOfData, DataType data, GLenum usage, GLintptr offset);
    
-    public:
+    protected:
         typedef std::pair<GLenum, std::vector<GLuint>*> newBufferType;
         typedef std::map<GLenum, std::vector<GLuint>*> buffersMap;
 
@@ -36,15 +36,15 @@ class BufferManager
 };
 
 template<typename DataType>
-void BufferManager::PushSubdata(GLenum _bufferType, DataType _data, GLenum _usage, GLintptr _offset)
+void BufferManager::PushSubdata(GLenum _bufferType, GLsizeiptr sizeOfData, DataType _data, GLenum _usage, GLintptr _offset)
 {
-    ASSERT(glBufferSubData(_bufferType, _offset, sizeof(*_data), *_data));
+    ASSERT(glBufferSubData(_bufferType, _offset, sizeOfData, *_data));
 }
 
 template<typename DataType>
-void BufferManager::PushData(GLenum _bufferType, DataType _data, GLenum _usage)
+void BufferManager::PushData(GLenum _bufferType, GLsizeiptr _sizeOfData, DataType _data, GLenum _usage)
 {
-    ASSERT(glBufferData(_bufferType, sizeof(*_data), *_data, _usage));
+    ASSERT(glBufferData(_bufferType, _sizeOfData, *_data, _usage));
 }
 
 template<typename DataType>
@@ -53,5 +53,27 @@ void BufferManager::PushData(GLuint _bufferIndex, GLuint _bufferType, DataType _
     ASSERT(glNamedBufferData(buffers[_bufferType]->at(_bufferIndex), sizeof(*_data), *_data, _usage));
 }
     
+
+class VBO : virtual public BufferManager
+{
+    public:
+        VBO(GLsizeiptr size, GLfloat* vertexData,  GLsizeiptr colorDataSize = 0, GLfloat* colorData = NULL);
+        void Bind();
+        void Unbind();
+    
+    private:
+        GLuint buffIdx;
+};
+
+class IBO : virtual public BufferManager
+{
+    public:
+        IBO(GLsizeiptr size, GLuint* indicesData);
+        void Bind();
+        void Unbind();
+
+    private:
+        GLuint buffIdx;
+};
 
 #endif

@@ -51,7 +51,7 @@ glm::mat4 Camera::LookAt()
     return actLookAt = lookAtMat;
 }
 
-Model::Model(glm::vec3 _translation, 
+ModelTFMS::ModelTFMS(glm::vec3 _translation, 
              std::vector<float> _rotAngles, 
              std::vector<glm::vec3> _rotAxises,
              glm::vec3 _scale)
@@ -59,7 +59,7 @@ Model::Model(glm::vec3 _translation,
     UpdateModel(_translation, _rotAngles, _rotAxises, _scale);
 }
 
-void Model::UpdateModel(glm::vec3 _translation, 
+void ModelTFMS::UpdateModel(glm::vec3 _translation, 
                         std::vector<float> _rotAngles, 
                         std::vector<glm::vec3> _rotAxises,
                         glm::vec3 _scale)
