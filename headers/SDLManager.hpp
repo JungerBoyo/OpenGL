@@ -18,17 +18,25 @@ class SDLManager
     public:
         SDLManager();
         void InitSDL();
-        void EventPolling(KeyBoard* virtualKeyBoard = NULL, Mouse* virtualMouse = NULL);
+        void EventPolling();
         
-        inline void SwitchWindow(SDLWindow* newWin)
+        inline void SwitchWindow(std::shared_ptr<SDLWindow> newWin)
             {   actualWindow = newWin;  }
 
+        inline void BindKeyBoard(std::shared_ptr<KeyBoard> vKeyBoard)
+            {   virtualKeyBoard = vKeyBoard;    }
+        
+        inline void BindMouse(std::shared_ptr<Mouse> vMouse)
+            {   virtualMouse = vMouse;  }
+
     private:
-        SDLWindow* actualWindow = NULL;
+        std::shared_ptr<SDLWindow> actualWindow = NULL;
+        std::shared_ptr<KeyBoard> virtualKeyBoard = NULL;
+        std::shared_ptr<Mouse> virtualMouse = NULL;
         bool MouseMode = false;
 };  
 
-class SDLWindow : public SDLManager
+class SDLWindow : virtual public SDLManager
 {
     public: 
         SDLWindow();
@@ -52,7 +60,7 @@ class KeyBoard
         typedef void(KeyBoard::*MovementControl)(SDL_Event*); 
 
         struct keyBoardFunctions
-        {
+        {       
             MovementControl MovCtrl1 = NULL;
             MovementControl MovCtrl2 = NULL;
         };
@@ -92,7 +100,7 @@ class Mouse
         };
 
     public:
-        inline Mouse(std::shared_ptr<Camera> setCam) : actualCamBind(setCam), functionality(new MouseFunctions()), data(new MouseData()) {}
+        inline Mouse(std::shared_ptr<Camera> setCam) : actualCamBind(setCam), functionality(new MouseFunctions()) {}
         inline void SetCam(std::shared_ptr<Camera> setCam) { actualCamBind = setCam; }
     
         void ButtonDownAction(SDL_Event* event);
@@ -105,7 +113,7 @@ class Mouse
         int enabled = 0;
 
     public:
-        MouseData* data = NULL;
+        MouseData data;
 };
 
 #endif

@@ -16,7 +16,7 @@ void SDLManager::InitSDL()
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 }
 
-void SDLManager::EventPolling(KeyBoard* _virtualKeyBoard, Mouse* _virtualMouse)
+void SDLManager::EventPolling()
 {
     SDL_Event event;
 
@@ -27,12 +27,12 @@ void SDLManager::EventPolling(KeyBoard* _virtualKeyBoard, Mouse* _virtualMouse)
             switch(event.type)
             {
                 case SDL_QUIT: actualWindow->isClosed = true; break;
-                case SDL_KEYDOWN: if(_virtualKeyBoard != NULL) _virtualKeyBoard->KeyDownAction(&event); break;
+                case SDL_KEYDOWN: if(virtualKeyBoard != NULL) virtualKeyBoard->KeyDownAction(&event); break;
                 case SDL_MOUSEBUTTONDOWN: 
-                                if(_virtualMouse != NULL) 
+                                if(virtualMouse != NULL) 
                                 {
                                    MouseMode = true; 
-                                   SDL_GetMouseState(&_virtualMouse->data->anchorCoordX, &_virtualMouse->data->anchorCoordY);  
+                                   SDL_GetMouseState(&virtualMouse->data.anchorCoordX, &virtualMouse->data.anchorCoordY);  
                                 }
                             break;
             }
@@ -41,7 +41,7 @@ void SDLManager::EventPolling(KeyBoard* _virtualKeyBoard, Mouse* _virtualMouse)
             if(event.type == SDL_MOUSEBUTTONUP)
                 MouseMode = false;
             else
-                _virtualMouse->ButtonDownAction(&event);
+                virtualMouse->ButtonDownAction(&event);
     }
 }
 
@@ -138,8 +138,8 @@ void Mouse::LookAround(SDL_Event* _event)
         SDL_GetMouseState(&mouseCoordX, &mouseCoordY);
 
         actualCamBind -> 
-            UpdateDirVec(0.00005f*(mouseCoordY - data->anchorCoordY), 
-                         0.00005f*(mouseCoordX - data->anchorCoordX));                
+            UpdateDirVec(0.00005f*(mouseCoordY - data.anchorCoordY), 
+                         0.00005f*(mouseCoordX - data.anchorCoordX));                
     }
 }
 

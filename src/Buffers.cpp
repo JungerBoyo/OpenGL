@@ -9,7 +9,7 @@ BufferManager::BufferManager()
 void BufferManager::GenBuffers(int _count, GLenum _bufferType)
 {
     if(buffers.count(_bufferType) == 0)
-        buffers.insert(newBufferType(_bufferType, new std::vector<GLuint>(_count)));
+        buffers.insert(newBufferType(_bufferType, std::make_unique<std::vector<GLuint>>(_count)));
     else
         buffers[_bufferType]->push_back(0);
     

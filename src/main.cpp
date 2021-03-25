@@ -136,8 +136,8 @@ int main(int argc, char** argv)
     SDLManager SDL;
     SDL.InitSDL();
 
-    SDLWindow WIN;
-    SDL.SwitchWindow(&WIN);
+    std::shared_ptr<SDLWindow> WIN = std::make_shared<SDLWindow>();
+    SDL.SwitchWindow(WIN);
 
     if(glewInit())
     {
@@ -147,20 +147,24 @@ int main(int argc, char** argv)
 
     init();
 
-    KeyBoard* keyboard = new KeyBoard(camera);
+    std::shared_ptr<KeyBoard> keyboard = std::make_shared<KeyBoard>(camera);
     keyboard -> KeyBoardEnable(ENABLE_WASD|ENABLE_ARROWS);
 
-    Mouse* mouse = new Mouse(camera);
+    std::shared_ptr<Mouse> mouse = std::make_shared<Mouse>(camera);
     mouse -> MouseEnable(ENABLE_MOUSE);
 
-    while(!WIN.isClosed)
+    SDL.BindKeyBoard(keyboard);
+    SDL.BindMouse(mouse);
+
+    while(!WIN->isClosed)
     {
         Display();
-        SDL.EventPolling(keyboard, mouse);
+        SDL.EventPolling();
         model1->UpdateModel(glm::vec3(0.0f,0.0f,0.0f), {0.01f, 0.005f}, {glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)});
-        WIN.SwapBuffers();
+        WIN->SwapBuffers();
     }
 
     return 0;
+
 }
 
