@@ -51,8 +51,3 @@ void ModelData::ParseData(const std::string& _dataPath)
 {
     // TODO
 }
-
-void Model::SetModel(const std::string& _vShaderPath, const std::string& _fShaderPath, const std::string& _gShaderPath = "")
-{
-
-}
