@@ -5,6 +5,7 @@
 
 #include <GL/glew.h>
 #include <vector>
+#include <memory>
 #include <map>
 
 class BufferManager
@@ -29,8 +30,8 @@ class BufferManager
         void PushSubdata(GLenum bufferType, GLsizeiptr sizeOfData, DataType data, GLenum usage, GLintptr offset);
    
     protected:
-        typedef std::pair<GLenum, std::vector<GLuint>*> newBufferType;
-        typedef std::map<GLenum, std::vector<GLuint>*> buffersMap;
+        typedef std::pair<GLenum, std::unique_ptr<std::vector<GLuint>>> newBufferType;
+        typedef std::map<GLenum, std::unique_ptr<std::vector<GLuint>>> buffersMap;
 
         buffersMap buffers;
 };
