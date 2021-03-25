@@ -1,10 +1,10 @@
-#include "../headers/Buffers.hpp"
-#include "../headers/Uniforms.hpp"
-#include "../headers/shaders.hpp"
-#include "../headers/VAOs.hpp"
-#include "../headers/ErrorGL.hpp"
-#include "../headers/transformations.hpp"
-#include "../headers/SDLManager.hpp"
+#include "headers/Buffers.hpp"
+#include "headers/Uniforms.hpp"
+#include "headers/shaders.hpp"
+#include "headers/VAOs.hpp"
+#include "headers/ErrorGL.hpp"
+#include "headers/transformations.hpp"
+#include "headers/SDLManager.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>

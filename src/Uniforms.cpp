@@ -1,4 +1,4 @@
-#include "../headers/Uniforms.hpp"
+#include "headers/Uniforms.hpp"
 
 Uniforms::Uniforms(std::string* _names, std::shared_ptr<Shader>& _shader)
 {

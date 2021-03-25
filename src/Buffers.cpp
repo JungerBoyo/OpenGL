@@ -1,4 +1,4 @@
-#include "../headers/Buffers.hpp"
+#include "headers/Buffers.hpp"
 #include <iostream>
 
 BufferManager::BufferManager()
