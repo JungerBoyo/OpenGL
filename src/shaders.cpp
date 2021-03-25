@@ -3,13 +3,13 @@
 #include <map>
 
 std :: map <GLenum, std::string> shaderTokens = 
-    {
-        {GL_VERTEX_SHADER, "vertex shader"}, 
-        {GL_FRAGMENT_SHADER, "fragment shader"},
-        {GL_GEOMETRY_SHADER, "geometry shader"}
-    };
+{
+    {GL_VERTEX_SHADER, "vertex shader"}, 
+    {GL_FRAGMENT_SHADER, "fragment shader"},
+    {GL_GEOMETRY_SHADER, "geometry shader"}
+};
 
-Shaders::Shaders(const std::string& _verShaderPath, const std::string& _fragShaderPath, const std::string& _geomShaderPath, GLuint* _program)
+Shader::Shader(const std::string& _verShaderPath, const std::string& _fragShaderPath, const std::string& _geomShaderPath)
 {
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -19,30 +19,30 @@ Shaders::Shaders(const std::string& _verShaderPath, const std::string& _fragShad
     fragmentShader = this->CompileShader(fragmentShader, _fragShaderPath, GL_FRAGMENT_SHADER);
     geometryShader = this->CompileShader(geometryShader, _geomShaderPath, GL_GEOMETRY_SHADER);
 
-    *_program = glCreateProgram();
-    glAttachShader(*_program, vertexShader);
-    glAttachShader(*_program, fragmentShader);
-    glAttachShader(*_program, geometryShader);
+    program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    glAttachShader(program, geometryShader);
 
-    glBindAttribLocation(*_program, 0, "vPosition");
+    glBindAttribLocation(program, 0, "vPosition");
 
-    glLinkProgram(*_program);
+    glLinkProgram(program);
 
     GLint isProgramLinked;
-    glGetProgramiv(*_program, GL_LINK_STATUS, &isProgramLinked);
+    glGetProgramiv(program, GL_LINK_STATUS, &isProgramLinked);
 
     if(isProgramLinked == GL_FALSE)
     {
         GLsizei length;
         char errMess[1024];
 
-        glGetProgramInfoLog(*_program, 1024, &length, errMess);
+        glGetProgramInfoLog(program, 1024, &length, errMess);
 
         std :: cerr << "Error of program linking \n error message :: " << errMess; 
     }
 }
 
-std::stringstream Shaders::ParseShader(const std::string& _shaderPath)
+std::stringstream Shader::ParseShader(const std::string& _shaderPath)
 {
     std::ifstream stream(_shaderPath);
     std::string line;
@@ -54,7 +54,7 @@ std::stringstream Shaders::ParseShader(const std::string& _shaderPath)
     return shaderCode;
 }
 
-GLuint Shaders::CompileShader(GLuint _shader, const std::string& _path, GLuint _shType)
+GLuint Shader::CompileShader(GLuint _shader, const std::string& _path, GLuint _shType)
 {
     std::string shSource = this->ParseShader(_path).str();
     
@@ -82,4 +82,14 @@ GLuint Shaders::CompileShader(GLuint _shader, const std::string& _path, GLuint _
     }
 
     return _shader;
+}
+
+void Shader::Bind()
+{
+    ASSERT(glUseProgram(program));
+}
+
+void Shader::Unbind()
+{
+    ASSERT(glUseProgram(0));
 }

@@ -1,17 +1,19 @@
 #include "../headers/Buffers.hpp"
+#include "../headers/Uniforms.hpp"
 #include "../headers/shaders.hpp"
 #include "../headers/VAOs.hpp"
 #include "../headers/ErrorGL.hpp"
 #include "../headers/transformations.hpp"
 #include "../headers/SDLManager.hpp"
-#include "../headers/Model.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <stdexcept>
 #include <string.h>
 #include <vector>
+#include <memory> 
 #include <iostream>
+
 
 GLuint indices[] =
 {
@@ -41,15 +43,14 @@ GLuint indices[] =
 
 VAOsManager vao;
 
-Camera* camera; int cam;
-ModelTFMS* model1; int mod1; 
-
-int pos;
+std::shared_ptr<Camera> camera; 
+std::unique_ptr<ModelTFMS> model1; 
+std::unique_ptr<Uniforms> uniforms;
 
 void init()
 {   
-    vao.GenVA(1);
-    vao.BindVA(0);
+    vao.GenVAO();
+    vao.BindVAO(0);
 
     GLfloat vertices[] =
     {
@@ -93,46 +94,39 @@ void init()
         0.0f, 0.8f, 0.8f, 1.0f
     };
 
-    VBO* vertexBuffer = new VBO(sizeof(vertices), vertices, sizeof(colors), colors);
-    IBO* indexBuffer = new IBO(sizeof(indices), indices);
+    std::unique_ptr<VBO> vertexBuffer = std::make_unique<VBO>(sizeof(vertices), vertices, sizeof(colors), colors);
+    std::unique_ptr<IBO> indexBuffer = std::make_unique<IBO>(sizeof(indices), indices);
+  
+    std::shared_ptr<Shader> cubeShader = std::make_shared<Shader>("../shaders/VertexShader.GLSL", 
+                                                                "../shaders/FragmentShader.GLSL", 
+                                                                "../shaders/GeometryShader.GLSL");
+    cubeShader->Bind();
 
-    GLuint program = glCreateProgram();  
-    Shaders* shMake = new Shaders("../shaders/VertexShader.GLSL", 
-                                  "../shaders/FragmentShader.GLSL", 
-                                  "../shaders/GeometryShader.GLSL", &program);
-    ASSERT(glUseProgram(program));
- 
     vao.EnableAttPtr(0);
+        vao.VertexAttPtr(0, 4, GL_FLOAT, (const GLvoid*) 0);
     vao.EnableAttPtr(1);
-    vao.VertexAttPtr(0, 4, GL_FLOAT);
-    ASSERT(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (const GLvoid*) sizeof(vertices)));
+        vao.VertexAttPtr(1, 4, GL_FLOAT, (const GLvoid*) sizeof(vertices));
     
-    // git
-    
+    uniforms = std::make_unique<Uniforms>((std::string[4]){"proj", "view", "model", "camPos"}, cubeShader);
+     
+    glm::mat4 proj = glm::perspective(0.38f*M_PIf32, 1.0f, 0.5f, 10.0f);
+        uniforms->BindUniformMat4(0, 1, GL_FALSE, &proj[0][0]);
 
-    int MVP = glGetUniformLocation(program, "MVP");
-    glm::mat4 mvp = glm::perspective(0.38f*M_PIf32, 1.0f, 0.5f, 10.0f);
-    ASSERT(glUniformMatrix4fv(MVP, 1, GL_FALSE, &mvp[0][0]));
+    camera = std::make_shared<Camera>();
+        uniforms->BindUniformMat4(1, 1, GL_FALSE, &camera->LookAt()[0][0]);
 
-    camera = new Camera();
-    model1 = new ModelTFMS({0.0f, 0.0f, -4.5f}, {{0.0f * M_PIf32}}, {{0.0f, 1.0f, 0.0f}});
+    model1 = std::make_unique<ModelTFMS>((glm::vec3){0.0f, 0.0f, -4.5f}, (std::vector<float>){{0.0f * M_PIf32}}, (std::vector<glm::vec3>){{0.0f, 1.0f, 0.0f}});
+        uniforms->BindUniformMat4(2, 1, GL_FALSE, model1->ModelMatData());
 
-    cam = glGetUniformLocation(program, "view");
-    ASSERT(glUniformMatrix4fv(cam, 1, GL_FALSE, &camera->LookAt()[0][0]));
-
-    mod1 = glGetUniformLocation(program, "model");
-    ASSERT(glUniformMatrix4fv(mod1, 1, GL_FALSE, &model1->GetActualModelMat()[0][0]));
-
-    pos = glGetUniformLocation(program, "pos");
 }
 
 void Display()
 {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-    ASSERT(glUniformMatrix4fv(cam, 1, GL_FALSE, &camera->GetActLookAtMat()[0][0]));
-    ASSERT(glUniform4fv(pos, 1, &(camera->GetActLookAtMat() * camera->GetCamPosition())[0]));
-    ASSERT(glUniformMatrix4fv(mod1, 1, GL_FALSE, &model1->GetActualModelMat()[0][0]));
+    uniforms->BindUniformMat4(1, 1, GL_FALSE, camera->CamMatData());
+    uniforms->BindUniformVec4(3, 1, &(camera->GetActLookAtMat()*camera->GetCamPosition())[0]);
+    uniforms->BindUniformMat4(2, 1, GL_FALSE, model1->ModelMatData());
 
     ASSERT(glDrawElements(GL_TRIANGLES, 36,  GL_UNSIGNED_INT, 0));
 }
