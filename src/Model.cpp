@@ -1,4 +1,4 @@
-#include "../headers/Model.hpp"
+#include "headers/Model.hpp"
 
 ModelData::ModelData(const std::string& _dataPath)
 {

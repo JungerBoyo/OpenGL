@@ -1,4 +1,4 @@
-#include "../headers/SDLManager.hpp"
+#include "headers/SDLManager.hpp"
 #include <iostream>
 
 SDLManager::SDLManager() {}

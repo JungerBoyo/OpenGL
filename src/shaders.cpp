@@ -1,4 +1,4 @@
-#include "../headers/shaders.hpp"
+#include "headers/shaders.hpp"
 #include <iostream>
 #include <map>
 

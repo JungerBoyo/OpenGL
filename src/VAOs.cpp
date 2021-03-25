@@ -1,5 +1,5 @@
-#include "../headers/VAOs.hpp"
-#include "../headers/ErrorGL.hpp"
+#include "headers/VAOs.hpp"
+#include "headers/ErrorGL.hpp"
 
 
 VAOsManager::VAOsManager() 
