@@ -2,6 +2,7 @@
 #define SDLMANAGER_HPP
 #include <SDL2/SDL.h>
 #include <vector>
+#include <memory>
 #include "transformations.hpp"
 
 enum { ENABLE_WASD = 1, ENABLE_ARROWS = 2 };
@@ -57,8 +58,8 @@ class KeyBoard
         };
 
     public:
-        inline KeyBoard(Camera* setCam) : actualCamBind(setCam), functionality(new keyBoardFunctions()) {}
-        inline void SetCam(Camera* setCam) {    actualCamBind = setCam;    }
+        inline KeyBoard(std::shared_ptr<Camera> setCam) : actualCamBind(setCam), functionality(new keyBoardFunctions()) {}
+        inline void SetCam(std::shared_ptr<Camera> setCam) {    actualCamBind = setCam;    }
 
         void KeyDownAction(SDL_Event* event);
 
@@ -68,7 +69,7 @@ class KeyBoard
         void KeyBoardEnable(int enable);
 
     private:
-        Camera* actualCamBind = NULL;
+        std::shared_ptr<Camera> actualCamBind = NULL;
         keyBoardFunctions* functionality = NULL;
         int enabled = 0;
         float rapidity = 0.3f;
@@ -91,15 +92,15 @@ class Mouse
         };
 
     public:
-        inline Mouse(Camera* setCam) : actualCamBind(setCam), functionality(new MouseFunctions()), data(new MouseData()) {}
-        inline void SetCam(Camera* setCam) { actualCamBind = setCam; }
+        inline Mouse(std::shared_ptr<Camera> setCam) : actualCamBind(setCam), functionality(new MouseFunctions()), data(new MouseData()) {}
+        inline void SetCam(std::shared_ptr<Camera> setCam) { actualCamBind = setCam; }
     
         void ButtonDownAction(SDL_Event* event);
         void LookAround(SDL_Event* event);
         void MouseEnable(int enable);
 
     private:
-        Camera* actualCamBind = NULL;
+        std::shared_ptr<Camera> actualCamBind = NULL;
         MouseFunctions* functionality = NULL;
         int enabled = 0;
 

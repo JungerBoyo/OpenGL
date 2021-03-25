@@ -18,7 +18,10 @@ class Camera
         void UpdatePos(int movType);
 
         inline glm::vec4 GetCamPosition() const { return camPos; }
-        inline glm::mat4 GetActLookAtMat() const {return actLookAt; }
+        inline glm::mat4 GetActLookAtMat() const { return actLookAt; }
+
+        inline float* CamMatData() { return &actLookAt[0][0]; }
+        inline float* CamPosData() { return &camPos[0]; }
 
     private:     
         glm::mat4 actLookAt;
@@ -37,9 +40,9 @@ class ModelTFMS
     public:
       public:
         ModelTFMS(glm::vec3 translation, 
-               std::vector<float> rotAngles, 
-               std::vector<glm::vec3> rotAxises,
-               glm::vec3 _scale = {1.0f, 1.0f, 1.0f});
+                  std::vector<float> rotAngles, 
+                  std::vector<glm::vec3> rotAxises,
+                  glm::vec3 _scale = {1.0f, 1.0f, 1.0f});
 
         void UpdateModel(glm::vec3 translation, 
                          std::vector<float> rotAngles = std::vector<float>(0), 
@@ -48,6 +51,8 @@ class ModelTFMS
 
         inline glm::mat4 GetActualModelMat() const { return actualModelMat; } 
         inline glm::vec3 GetActualModelWorldCoords() const { return actualModelWorldCoords; }
+
+        inline float* ModelMatData() { return &actualModelMat[0][0]; }
 
     private:
         glm::mat4 actualModelMat = glm::mat4(1.0f);

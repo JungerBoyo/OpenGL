@@ -10,7 +10,7 @@ in VS_OUT
 
 sample out vec4 fColor;
 
-uniform mat4 MVP;
+uniform mat4 proj;
 uniform vec4 camPos;
 
 void main()
@@ -23,15 +23,15 @@ void main()
     if(dot(normal,vec3(gl_in[1].gl_Position) - vec3(camPos)) < 0)
     {
         fColor = gs_in[0].fColor;
-        gl_Position = (gl_in[0].gl_Position+vec4(0.0, 0.0, 0.0, 0.0))*MVP;
+        gl_Position = (gl_in[0].gl_Position+vec4(0.0, 0.0, 0.0, 0.0))*proj;
         EmitVertex();
 
         fColor = gs_in[1].fColor;
-        gl_Position = (gl_in[1].gl_Position+vec4(0.0, 0.0, 0.0, 0.0))*MVP;
+        gl_Position = (gl_in[1].gl_Position+vec4(0.0, 0.0, 0.0, 0.0))*proj;
         EmitVertex();
 
         fColor = gs_in[2].fColor;
-        gl_Position = (gl_in[2].gl_Position+vec4(0.0, 0.0, 0.0, 0.0))*MVP;
+        gl_Position = (gl_in[2].gl_Position+vec4(0.0, 0.0, 0.0, 0.0))*proj;
         EmitVertex();
 
         EndPrimitive();

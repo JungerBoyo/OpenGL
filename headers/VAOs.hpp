@@ -11,16 +11,15 @@ class VAOsManager
 {
     public:
         VAOsManager();
-        void GenVA(int count);
-        void BindVA(unsigned int index);
+        void GenVAO();
+        void BindVAO(const GLuint& index);
         void EnableAttPtr(GLuint location);
         void VertexAttPtrConst(GLuint location, glm::vec3 values);
 
-    
-        void VertexAttPtr(GLuint location, GLuint size, GLenum type);
+        void VertexAttPtr(GLuint location, GLuint size, GLenum type, const void* _offset);
 
     public:
-        std::vector<GLuint>* VAOs;
+        std::vector<GLuint> VAOs;
 };
 
 
