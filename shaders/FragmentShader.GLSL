@@ -2,7 +2,7 @@
 
 layout (location = 0) out vec4 finalColor;
 
-in vec4 fColor;
+sample in vec4 fColor;
 
 void main()
 {

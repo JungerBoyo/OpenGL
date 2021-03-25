@@ -13,7 +13,6 @@ class Shaders
     private:  
         std::stringstream ParseShader(const std::string& shaderPath);
         GLuint CompileShader(GLuint shader, const std::string& path, GLuint shType);
-        void BindShaders();
 };
 
 #endif

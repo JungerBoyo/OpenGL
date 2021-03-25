@@ -32,11 +32,11 @@ class Camera
 
 };
 
-class Model
+class ModelTFMS
 {
     public:
       public:
-        Model(glm::vec3 translation, 
+        ModelTFMS(glm::vec3 translation, 
                std::vector<float> rotAngles, 
                std::vector<glm::vec3> rotAxises,
                glm::vec3 _scale = {1.0f, 1.0f, 1.0f});
