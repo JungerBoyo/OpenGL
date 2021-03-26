@@ -13,7 +13,7 @@ void BufferManager::GenBuffers(int _count, GLenum _bufferType)
     else
         buffers[_bufferType]->push_back(0);
     
-    ASSERT(glGenBuffers(_count, buffers[_bufferType]->data())); // ------------------------------------
+    ASSERT(glGenBuffers(_count, &buffers[_bufferType]->back())); 
 }
 
 void BufferManager::BindBuffer(GLenum _bufferType, GLuint _bufferIndex)
