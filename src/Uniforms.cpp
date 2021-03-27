@@ -5,7 +5,6 @@ Uniforms::Uniforms(std::string* _names, unsigned int _count,  std::shared_ptr<Sh
     for(int i=0; i<_count; i++)
     {
         int location = glGetUniformLocation(_shader->program,  _names[i].c_str());
-        std :: cout << _names[i] << " :: " << location << '\n';
         if(location == -1)
             std :: cerr << "OpenGL Error :: Uniforms :: Uniforms(..) : invalid uniform name, '" << _names[i] <<"'\n";
         else
