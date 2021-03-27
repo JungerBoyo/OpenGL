@@ -15,7 +15,7 @@
 #include <iostream>
 
 
-GLuint indices[] =
+GLuint indicesCube[] =
 {
     0, 1, 2,
     0, 3, 1, // front
@@ -31,20 +31,21 @@ GLuint indices[] =
     7, 4, 6
 };
 
-//GLuint indices1[]
-//{
-//    0, 1, 5,
-//    1, 3, 5,
-//    3, 2, 5,
-//    2, 0, 5,
-//    3, 0, 1,
-//    3, 2, 0
-//};
+GLuint indicesCone[]
+{
+    0, 1, 4,
+    1, 3, 4,
+    3, 2, 4,
+    2, 0, 4,
+    2, 1, 0,
+    2, 3, 1
+};
 
 VAOsManager vao;
 
 std::shared_ptr<Camera> camera; 
-std::unique_ptr<ModelTFMS> model1; 
+std::unique_ptr<ModelTFMS> cubeTfms; 
+std::unique_ptr<ModelTFMS> coneTfms; 
 std::unique_ptr<Uniforms> uniforms;
 
 void init()
@@ -52,7 +53,7 @@ void init()
     vao.GenVAO();
     vao.BindVAO(0);
 
-    GLfloat vertices[] =
+    GLfloat verticesCube[] =
     {
         -1.0f, -1.0f, 1.0f, 1.0f, // Triangle 1
          1.0f,  1.0f, 1.0f, 1.0f,
@@ -64,25 +65,7 @@ void init()
          1.0f, -1.0f,-1.0f, 1.0f
     };
 
-    //GLfloat vertices1[] =
-    //{
-    //    -0.5f, -0.5f, 0.0f, 1.0f,
-    //     0.5f, -0.5f, 0.0f, 1.0f,
-    //    -0.5f, -0.5f,-1.0f, 1.0f,
-    //     0.5f, -0.5f,-1.0f, 1.0f,
-    //     0.0f,  0.5f,-0.5f, 1.0f
-    //};
-//
-    //GLfloat colors1[] =
-    //{
-    //    0.3f, 0.3f, 0.3f, 1.0f,
-    //    0.3f, 0.4f, 0.4f, 1.0f,
-    //    0.1f, 0.8f, 0.5f, 1.0f,
-    //    0.9f, 0.8f, 0.6f, 1.0f,
-    //    0.4f, 0.4f, 0.7f, 1.0f
-    //};
-
-    GLfloat colors[] =
+    GLfloat colorsCube[] =
     {
         0.1f, 0.1f, 0.1f, 1.0f,
         0.2f, 0.2f, 0.2f, 1.0f,
@@ -94,29 +77,68 @@ void init()
         0.0f, 0.8f, 0.8f, 1.0f
     };
 
-    std::unique_ptr<VBO> vertexBuffer = std::make_unique<VBO>(sizeof(vertices), vertices, sizeof(colors), colors);
-    std::unique_ptr<IBO> indexBuffer = std::make_unique<IBO>(sizeof(indices), indices);
+    std::unique_ptr<VBO> vertexBufferCube = std::make_unique<VBO>(sizeof(verticesCube), verticesCube, sizeof(colorsCube), colorsCube);
+    std::unique_ptr<IBO> indexBufferCube = std::make_unique<IBO>(sizeof(indicesCube), indicesCube);
   
-    std::shared_ptr<Shader> cubeShader = std::make_shared<Shader>("../shaders/VertexShader.GLSL", 
-                                                                "../shaders/FragmentShader.GLSL", 
-                                                                "../shaders/GeometryShader.GLSL");
+    std::shared_ptr<Shader> cubeShader = std::make_shared<Shader>("../shaders/cube/VertexShader.GLSL", 
+                                                                  "../shaders/cube/FragmentShader.GLSL", 
+                                                                  "../shaders/cube/GeometryShader.GLSL");
     cubeShader->Bind();
 
     vao.EnableAttPtr(0);
         vao.VertexAttPtr(0, 4, GL_FLOAT, (const GLvoid*) 0);
     vao.EnableAttPtr(1);
-        vao.VertexAttPtr(1, 4, GL_FLOAT, (const GLvoid*) sizeof(vertices));
+        vao.VertexAttPtr(1, 4, GL_FLOAT, (const GLvoid*) sizeof(verticesCube));
     
-    uniforms = std::make_unique<Uniforms>((std::string[4]){"proj", "view", "model", "camPos"}, cubeShader);
+    uniforms = std::make_unique<Uniforms>((std::string[6]){"uProj", "uView", "uModel", "uCamPos", "uLights", "uLightCount"}, 6, cubeShader);
      
     glm::mat4 proj = glm::perspective(0.38f*M_PIf32, 1.0f, 0.5f, 10.0f);
         uniforms->BindUniformMat4(0, 1, GL_FALSE, &proj[0][0]);
 
+    glm::vec4 lights[] =
+    {
+       {-0.5f, 0.5f, 0.5f, 1.0f}, { 0.5f, 0.5f, 0.5f, 1.0f},
+       { 0.5f, 0.5f, 0.5f, 1.0f}, { 0.0f, 0.2f, 0.0f, 1.0f}
+    };
+    uniforms->BindUniformConstUI(5, 4);
+    uniforms->BindUniformVec4(4, 4, &lights[0][0]);
+    
     camera = std::make_shared<Camera>();
         uniforms->BindUniformMat4(1, 1, GL_FALSE, &camera->LookAt()[0][0]);
 
-    model1 = std::make_unique<ModelTFMS>((glm::vec3){0.0f, 0.0f, -4.5f}, (std::vector<float>){{0.0f * M_PIf32}}, (std::vector<glm::vec3>){{0.0f, 1.0f, 0.0f}});
-        uniforms->BindUniformMat4(2, 1, GL_FALSE, model1->ModelMatData());
+    cubeTfms = std::make_unique<ModelTFMS>((glm::vec3){0.0f, 0.0f, -4.5f}, (std::vector<float>){{0.0f * M_PIf32}}, (std::vector<glm::vec3>){{0.0f, 1.0f, 0.0f}});
+
+    vao.GenVAO();
+    vao.BindVAO(1);
+   
+    GLfloat verticesCone[] =
+    {
+        -1.0f, -1.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f,-1.0f, 1.0f,
+         1.0f, -1.0f,-1.0f, 1.0f,
+         0.0f,  1.5f, 0.0f, 1.0f
+    };
+
+    GLfloat colorsCone[] =
+    {
+        0.7f, 0.9f, 0.3f, 1.0f,
+        0.3f, 0.4f, 0.7f, 1.0f,
+        0.0f, 0.8f, 0.5f, 1.0f,
+        0.6f, 0.2f, 0.6f, 1.0f,
+        0.4f, 0.0f, 0.7f, 1.0f
+    };
+
+    std::unique_ptr<VBO> vertexBufferCone = std::make_unique<VBO>(sizeof(verticesCone), verticesCone, sizeof(colorsCone), colorsCone);
+    std::unique_ptr<IBO> indexBufferCone = std::make_unique<IBO>(sizeof(indicesCone), indicesCone);
+
+    vao.EnableAttPtr(0);
+        vao.VertexAttPtr(0, 4, GL_FLOAT, (const GLvoid*)0);
+    vao.EnableAttPtr(1);
+        vao.VertexAttPtr(1, 4, GL_FLOAT, (const GLvoid*)sizeof(verticesCone));
+
+    coneTfms = std::make_unique<ModelTFMS>((glm::vec3){-6.0f, 0.0f, -4.5f}, (std::vector<float>){{0.0f * M_PIf32}}, (std::vector<glm::vec3>){{0.0f, 1.0f, 0.0f}}, (glm::vec3){2.0f, 2.0f, 2.0f});   
+
 
 }
 
@@ -126,9 +148,14 @@ void Display()
 
     uniforms->BindUniformMat4(1, 1, GL_FALSE, camera->CamMatData());
     uniforms->BindUniformVec4(3, 1, &(camera->GetActLookAtMat()*camera->GetCamPosition())[0]);
-    uniforms->BindUniformMat4(2, 1, GL_FALSE, model1->ModelMatData());
 
+    uniforms->BindUniformMat4(2, 1, GL_FALSE, cubeTfms->ModelMatData());
+    vao.BindVAO(0);
     ASSERT(glDrawElements(GL_TRIANGLES, 36,  GL_UNSIGNED_INT, 0));
+
+    uniforms->BindUniformMat4(2, 1, GL_FALSE, coneTfms->ModelMatData());
+    vao.BindVAO(1);
+    ASSERT(glDrawElements(GL_TRIANGLES, 18,  GL_UNSIGNED_INT, 0));
 }
 
 int main(int argc, char** argv)
@@ -144,6 +171,7 @@ int main(int argc, char** argv)
         std :: cerr << "glewInit(): glew Initialization failed\n";
         return 1;
     }
+    glEnable(GL_DEPTH_TEST);
 
     init();
 
@@ -160,7 +188,9 @@ int main(int argc, char** argv)
     {
         Display();
         SDL.EventPolling();
-        model1->UpdateModel(glm::vec3(0.0f,0.0f,0.0f), {0.01f, 0.005f}, {glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)});
+        cubeTfms->UpdateModel(glm::vec3(0.0f,0.0f,0.0f), {0.01f, 0.005f}, {glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)});
+        coneTfms->UpdateModel(glm::vec3(0.0f,0.0f,0.0f), {0.01f, 0.02f}, {glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)});
+        
         WIN->SwapBuffers();
     }
 

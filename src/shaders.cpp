@@ -15,6 +15,7 @@ Shader::Shader(const std::string& _verShaderPath, const std::string& _fragShader
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     GLuint geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
     
+
     vertexShader = this->CompileShader(vertexShader, _verShaderPath, GL_VERTEX_SHADER);
     fragmentShader = this->CompileShader(fragmentShader, _fragShaderPath, GL_FRAGMENT_SHADER);
     geometryShader = this->CompileShader(geometryShader, _geomShaderPath, GL_GEOMETRY_SHADER);
