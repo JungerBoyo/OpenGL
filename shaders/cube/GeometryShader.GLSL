@@ -6,42 +6,46 @@ layout(triangle_strip, max_vertices = 3) out;
 in VS_OUT
 {
     vec4 fColor;
+    vec3 vPosition;
 }gs_in[];
 
-sample out vec4 fColor;
+out GS_OUT
+{
+    vec4 fColor;
+    vec3 vNormal;
+    vec3 vPosition;
+}gs_out;
 
-uniform mat4 proj;
-uniform vec4 camPos;
+uniform mat4 uProj;
+uniform vec4 uCamPos;
 
 void main()
 {
-    vec3 a = vec3(gl_in[1].gl_Position - gl_in[0].gl_Position);
-    vec3 b = vec3(gl_in[2].gl_Position - gl_in[0].gl_Position);
+    vec3 normal = normalize(cross( (gl_in[1].gl_Position - gl_in[0].gl_Position).xyz, (gl_in[2].gl_Position - gl_in[0].gl_Position).xyz));
+    vec3 worldNormal = normalize(cross( (gs_in[1].vPosition - gs_in[0].vPosition).xyz, (gs_in[2].vPosition - gs_in[0].vPosition).xyz));
 
-    vec3 normal = normalize(cross(a,b));
-
-    if(dot(normal,vec3(gl_in[1].gl_Position) - vec3(camPos)) < 0)
+    if(dot(normal, (gl_in[1].gl_Position.xyz) - (uCamPos.xyz)) < 0)
     {
-        vec3 v = vec3(normalize(camPos - gl_in[1].gl_Position));
-
-        float s = clamp(100*dot((2*dot(vec3(-0.57, 0.57, 0.57), normal)*normal - vec3(-0.57, 0.57, 0.57)), v) - 97, 0.0, 1.0);
-        float t = (dot(vec3(-0.57, 0.57, 0.57), normal) + 1)/2;
-        
-        fColor = vec4(s*vec3(1.0, 1.0, 1.0) + (1-s)*(t*(vec3(0.3, 0.2, 0.0) + vec3(0.25*gs_in[0].fColor)) + (1-t)*(vec3(-0.2, -0.2, 0.0) + vec3(0.25*gs_in[0].fColor))), 1.0);
-        gl_Position = (gl_in[0].gl_Position)*proj;
+        gs_out.fColor = gs_in[0].fColor;
+        gs_out.vNormal = worldNormal;
+        gs_out.vPosition = gs_in[0].vPosition;
+        gl_Position = (gl_in[0].gl_Position)*uProj; // 1
         EmitVertex();
 
-        fColor = vec4(s*vec3(1.0, 1.0, 1.0) + (1-s)*(t*(vec3(0.3, 0.2, 0.0) + vec3(0.25*gs_in[1].fColor)) + (1-t)*(vec3(-0.2, -0.2, 0.0) + vec3(0.25*gs_in[1].fColor))), 1.0);
-        gl_Position = (gl_in[1].gl_Position)*proj;
+        gs_out.fColor = gs_in[1].fColor;
+        gs_out.vNormal = worldNormal;
+        gs_out.vPosition = gs_in[1].vPosition;
+        gl_Position = (gl_in[1].gl_Position)*uProj; // 2
         EmitVertex();
 
-        fColor = vec4(s*vec3(1.0, 1.0, 1.0) + (1-s)*(t*(vec3(0.3, 0.2, 0.0) + vec3(0.25*gs_in[2].fColor)) + (1-t)*(vec3(-0.2, -0.2, 0.0) + vec3(0.25*gs_in[2].fColor))), 1.0);
-        gl_Position = (gl_in[2].gl_Position)*proj;
+        gs_out.fColor = gs_in[2].fColor;
+        gs_out.vNormal = worldNormal;
+         gs_out.vPosition = gs_in[2].vPosition;
+        gl_Position = (gl_in[2].gl_Position)*uProj; // 3
         EmitVertex();
 
         EndPrimitive();
     }
     else
         EndPrimitive();
-    
 }

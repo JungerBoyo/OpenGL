@@ -90,11 +90,19 @@ void init()
     vao.EnableAttPtr(1);
         vao.VertexAttPtr(1, 4, GL_FLOAT, (const GLvoid*) sizeof(verticesCube));
     
-    uniforms = std::make_unique<Uniforms>((std::string[4]){"proj", "view", "model", "camPos"}, cubeShader);
+    uniforms = std::make_unique<Uniforms>((std::string[6]){"uProj", "uView", "uModel", "uCamPos", "uLights", "uLightCount"}, 6, cubeShader);
      
     glm::mat4 proj = glm::perspective(0.38f*M_PIf32, 1.0f, 0.5f, 10.0f);
         uniforms->BindUniformMat4(0, 1, GL_FALSE, &proj[0][0]);
 
+    glm::vec4 lights[] =
+    {
+       {-0.5f, 0.5f, 0.5f, 1.0f}, { 0.5f, 0.5f, 0.5f, 1.0f},
+       { 0.5f, 0.5f, 0.5f, 1.0f}, { 0.0f, 0.2f, 0.0f, 1.0f}
+    };
+    uniforms->BindUniformConstUI(5, 4);
+    uniforms->BindUniformVec4(4, 4, &lights[0][0]);
+    
     camera = std::make_shared<Camera>();
         uniforms->BindUniformMat4(1, 1, GL_FALSE, &camera->LookAt()[0][0]);
 
@@ -130,6 +138,7 @@ void init()
         vao.VertexAttPtr(1, 4, GL_FLOAT, (const GLvoid*)sizeof(verticesCone));
 
     coneTfms = std::make_unique<ModelTFMS>((glm::vec3){-6.0f, 0.0f, -4.5f}, (std::vector<float>){{0.0f * M_PIf32}}, (std::vector<glm::vec3>){{0.0f, 1.0f, 0.0f}}, (glm::vec3){2.0f, 2.0f, 2.0f});   
+
 
 }
 
