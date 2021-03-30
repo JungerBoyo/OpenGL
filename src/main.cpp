@@ -122,11 +122,11 @@ void init()
 
     GLfloat colorsCone[] =
     {
-        0.7f, 0.9f, 0.3f, 1.0f,
-        0.3f, 0.4f, 0.7f, 1.0f,
-        0.0f, 0.8f, 0.5f, 1.0f,
-        0.6f, 0.2f, 0.6f, 1.0f,
-        0.4f, 0.0f, 0.7f, 1.0f
+        0.7f, 0.9f, 0.3f, 0.8f,
+        0.3f, 0.4f, 0.7f, 0.8f,
+        0.0f, 0.8f, 0.5f, 0.8f,
+        0.6f, 0.2f, 0.6f, 0.8f,
+        0.4f, 0.0f, 0.7f, 0.8f
     };
 
     std::unique_ptr<VBO> vertexBufferCone = std::make_unique<VBO>(sizeof(verticesCone), verticesCone, sizeof(colorsCone), colorsCone);
@@ -138,8 +138,6 @@ void init()
         vao.VertexAttPtr(1, 4, GL_FLOAT, (const GLvoid*)sizeof(verticesCone));
 
     coneTfms = std::make_unique<ModelTFMS>((glm::vec3){-6.0f, 0.0f, -4.5f}, (std::vector<float>){{0.0f * M_PIf32}}, (std::vector<glm::vec3>){{0.0f, 1.0f, 0.0f}}, (glm::vec3){2.0f, 2.0f, 2.0f});   
-
-
 }
 
 void Display()
@@ -172,6 +170,8 @@ int main(int argc, char** argv)
         return 1;
     }
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     init();
 
