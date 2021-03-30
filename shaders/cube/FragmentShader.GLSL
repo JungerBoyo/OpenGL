@@ -27,7 +27,7 @@ void main()
     vec3 n = fs_in.vNormal;
     vec3 v = normalize(uCamPos.xyz - fs_in.vPosition);
     
-    finalColor = 0.3*fs_in.fColor;
+    finalColor = vec4(0.5 * fs_in.fColor.rgb, fs_in.fColor.a);
 
     for(int i=0; i<uLightCount; i+=2)
     {
@@ -35,4 +35,5 @@ void main()
         float towardLightperc = clamp(dot(l, n), 0.0, 1.0);
         finalColor.rgb += towardLightperc * uLights[i+1].rgb * lit(l, n, v, fs_in.fColor.rgb);
     }
+    
 };
