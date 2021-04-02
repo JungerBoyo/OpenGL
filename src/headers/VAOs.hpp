@@ -18,6 +18,11 @@ class VAOsManager
 
         void VertexAttPtr(GLuint location, GLuint size, GLenum type, const void* _offset);
 
+        inline void VertexAttDivisor(GLuint idx, GLuint divisor)
+        {
+            ASSERT(glVertexAttribDivisor(idx, divisor));
+        }
+
     public:
         std::vector<GLuint> VAOs;
 };
