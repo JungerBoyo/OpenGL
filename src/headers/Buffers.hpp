@@ -58,7 +58,8 @@ void BufferManager::PushData(GLuint _bufferIndex, GLuint _bufferType, DataType _
 class VBO : virtual public BufferManager
 {
     public:
-        VBO(GLsizeiptr size, GLfloat* vertexData,  GLsizeiptr colorDataSize = 0, GLfloat* colorData = NULL);
+        VBO(GLsizeiptr size, GLfloat* vertexData,  GLsizeiptr colorDataSize, GLfloat* colorData);
+        VBO(GLsizeiptr rawSize, GLfloat* rawData);
         void Bind();
         void Unbind();
     

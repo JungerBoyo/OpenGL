@@ -6,7 +6,7 @@ Uniforms::Uniforms(std::string* _names, unsigned int _count,  std::shared_ptr<Sh
     {
         int location = glGetUniformLocation(_shader->program,  _names[i].c_str());
         if(location == -1)
-            std :: cerr << "OpenGL Error :: Uniforms :: Uniforms(..) : invalid uniform name, '" << _names[i] <<"'\n";
+            std::cerr << "OpenGL Error::Uniforms::Uniforms(..) : invalid uniform name, '" << _names[i] <<"'\n";
         else
             uniforms.push_back(location);
     }
@@ -16,7 +16,7 @@ void Uniforms::AddUniform(const std::string& _name, std::shared_ptr<Shader>& _sh
 {
     int location = glGetUniformLocation(_shader->program,  _name.c_str());
     if(location == -1)
-        std :: cerr << "OpenGL Error :: Uniforms :: Uniforms(..) : invalid uniform name, '" << _name <<"'\n";
+        std::cerr << "OpenGL Error::Uniforms::Uniforms(..) : invalid uniform name, '" << _name <<"'\n";
     else
         uniforms.push_back(location);
 }

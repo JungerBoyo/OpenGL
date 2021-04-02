@@ -13,8 +13,8 @@ static void GetError(const char* func, const char* file, int line)
 {
     while(GLenum error = glGetError())
     {
-        std::cout << "OpenGL Error :: " << std::hex << error << std::dec << 
-                     "\n At :: " << func <<'('<<file<<")\n On line :: " << line << std::endl;    
+        std::cout << "OpenGL Error::" << std::hex << error << std::dec <<
+                     "\n At::" << func <<'('<<file<<")\n On line::" << line << std::endl;
     }
 }
 

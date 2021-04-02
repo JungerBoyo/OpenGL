@@ -1,5 +1,5 @@
 #include "headers/transformations.hpp"
-
+#include <iostream>
 void Camera::UpdatePos(int _movType)
 {
     switch(_movType)
@@ -51,27 +51,83 @@ glm::mat4 Camera::LookAt()
     return actLookAt = lookAtMat;
 }
 
-ModelTFMS::ModelTFMS(glm::vec3 _translation, 
-             std::vector<float> _rotAngles, 
-             std::vector<glm::vec3> _rotAxises,
-             glm::vec3 _scale)
+ModelMatrices::ModelMatrices(int _count)
 {
-    UpdateModel(_translation, _rotAngles, _rotAxises, _scale);
+    transformationMatrices.reserve(_count);
+    transformData.reserve(_count);
+    for(unsigned int i=0; i<_count; i++)
+    {
+        transformationMatrices.emplace_back(glm::mat4(1.0f));
+        transformData.emplace_back(OneMatrixData());
+    }
 }
 
-void ModelTFMS::UpdateModel(glm::vec3 _translation, 
-                        std::vector<float> _rotAngles, 
-                        std::vector<glm::vec3> _rotAxises,
-                        glm::vec3 _scale)
+void ModelMatrices::UpdateModel(unsigned int _ID)
 {
-    glm::mat4 scaleMat = glm::scale(glm::mat4(1.0f), _scale);
-    
-    glm::mat4 rotMat = glm::mat4(1.0f);
-    for(int i=0; i<_rotAngles.size() && i<3; i++)
-        rotMat *= glm::rotate(glm::mat4(1.0f), _rotAngles[i], _rotAxises[i]);
-    
-    glm::mat4 translateMat = glm::translate(glm::mat4(1.0f), _translation);
+    for(unsigned int i=0; i < transformData[_ID].angleRotRates.size(); i++)
+        transformationMatrices[_ID] = glm::rotate(transformationMatrices[_ID], transformData[_ID].angleRotRates[i] * M_PIf32, transformData[_ID].axisRots[i]);
 
-    actualModelMat *= translateMat * rotMat * scaleMat;
-    actualModelWorldCoords += _translation;
+    for(unsigned int i=0; i < transformData[_ID].translateRates.size(); i++)
+        transformationMatrices[_ID] = glm::translate(transformationMatrices[_ID], transformData[_ID].translateRates[i] * transformData[_ID].translateDirs[i]);
+}
+void ModelMatrices::AddAngle(float _rotRate, glm::vec3 _axisisRot, unsigned int _matIdx)
+{
+    transformData[_matIdx].axisRots.push_back(glm::normalize(_axisisRot));
+    transformData[_matIdx].angleRotRates.push_back(_rotRate);
+}
+void ModelMatrices::AddAngles(std::vector<float> _rotRates, std::vector<glm::vec3> _axisisRots, unsigned int _matIdx)
+{
+    for(unsigned int i=0; i<_axisisRots.size(); i++)
+        _axisisRots[i] = glm::normalize(_axisisRots[i]);
+
+    transformData[_matIdx].axisRots.insert(transformData[_matIdx].axisRots.end(), _axisisRots.begin(), _axisisRots.end());
+    transformData[_matIdx].angleRotRates.insert(transformData[_matIdx].angleRotRates.end(), _rotRates.begin(), _rotRates.end());
+}
+
+void ModelMatrices::AddTranslation(float _translationRate, glm::vec3 _translationDir, unsigned int _matIdx)
+{
+    transformData[_matIdx].translateDirs.push_back(glm::normalize(_translationDir));
+    transformData[_matIdx].translateRates.push_back(_translationRate);
+}
+void ModelMatrices::AddTranslations(std::vector<float> _translationRates, std::vector<glm::vec3> _translationDirs,  unsigned int _matIdx)
+{
+    for(unsigned int i=0; i<_translationDirs.size(); i++)
+        _translationDirs[i] = glm::normalize(_translationDirs[i]);
+
+    transformData[_matIdx].translateDirs.insert(transformData[_matIdx].translateDirs.end(), _translationDirs.begin(), _translationDirs.end());
+    transformData[_matIdx].translateRates.insert(transformData[_matIdx].translateRates.end(), _translationRates.begin(), _translationRates.end());
+}
+
+void ModelMatrices::ReplaceAngle(float _rotRate, glm::vec3 _axisisRot, unsigned int _matIdx, unsigned int _matDataIdx)
+{
+    transformData[_matIdx].axisRots[_matDataIdx] = glm::normalize(_axisisRot);
+    transformData[_matIdx].angleRotRates[_matDataIdx] = _rotRate;
+}
+
+void ModelMatrices::ReplaceTranslation(float rotRate, glm::vec3 axisisRot, unsigned int matIdx, unsigned int matDataIdx)
+{
+    transformData[matIdx].translateDirs[matDataIdx] = glm::normalize(axisisRot);
+    transformData[matIdx].translateRates[matDataIdx] = rotRate;
+}
+
+void ModelMatrices::ScaleOne(glm::vec3 _scale, unsigned int _matIdx)
+{
+    transformationMatrices[_matIdx] = glm::scale(transformationMatrices[_matIdx], _scale);
+}
+
+void ModelMatrices::ScaleAll(glm::vec3 _scale)
+{
+    for(int i=0; i<transformationMatrices.size(); i++)
+        transformationMatrices[i] = glm::scale(transformationMatrices[i], _scale);
+}
+
+void ModelMatrices::UpdateOne(unsigned int _matIdx)
+{
+    this->UpdateModel(_matIdx);
+}
+
+void ModelMatrices::UpdateAll()
+{
+    for(unsigned int i=0; i<transformationMatrices.size(); i++)
+        this->UpdateModel(i);
 }

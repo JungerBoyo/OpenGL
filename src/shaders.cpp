@@ -2,7 +2,7 @@
 #include <iostream>
 #include <map>
 
-std :: map <GLenum, std::string> shaderTokens = 
+std::map <GLenum, std::string> shaderTokens =
 {
     {GL_VERTEX_SHADER, "vertex shader"}, 
     {GL_FRAGMENT_SHADER, "fragment shader"},
@@ -39,7 +39,7 @@ Shader::Shader(const std::string& _verShaderPath, const std::string& _fragShader
 
         glGetProgramInfoLog(program, 1024, &length, errMess);
 
-        std :: cerr << "Error of program linking \n error message :: " << errMess; 
+        std::cerr << "Error of program linking \n error message::" << errMess;
     }
 }
 
@@ -76,8 +76,8 @@ GLuint Shader::CompileShader(GLuint _shader, const std::string& _path, GLuint _s
 
         glGetShaderInfoLog(_shader, 1024, &length, errorMess);
 
-        std :: cerr << "Error of " << shaderTokens[_shType]
-                    << " compilation. \n error message :: " << errorMess;
+        std::cerr << "Error of " << shaderTokens[_shType]
+                    << " compilation. \n error message::" << errorMess;
 
         return 0;
     }

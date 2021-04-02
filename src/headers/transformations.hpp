@@ -3,8 +3,15 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
+#include <functional>
+#include <memory>
 #include <vector>
+
+class ModelMatrices;
+class Camera;
+class ModelTFMS;
 
 enum {CAM_FORWARD, CAM_BACKWARD, CAM_RIGHT, CAM_LEFT};
 
@@ -35,28 +42,54 @@ class Camera
 
 };
 
-class ModelTFMS
+class ModelMatrices
 {
+    typedef float(*scaleOscillationFunction)(float);
+
     public:
-      public:
-        ModelTFMS(glm::vec3 translation, 
-                  std::vector<float> rotAngles, 
-                  std::vector<glm::vec3> rotAxises,
-                  glm::vec3 _scale = {1.0f, 1.0f, 1.0f});
+        ModelMatrices(int count);
 
-        void UpdateModel(glm::vec3 translation, 
-                         std::vector<float> rotAngles = std::vector<float>(0), 
-                         std::vector<glm::vec3> rotAxises = std::vector<glm::vec3>(0),
-                         glm::vec3 scale = {1.0f, 1.0f, 1.0f});
+        void AddAngle(float rotRate, glm::vec3 axisisRot, unsigned int matIdx);
+        void AddAngles(std::vector<float> _rotRates, std::vector<glm::vec3> _axisisRots, unsigned int matIdx);
+        void ReplaceAngle(float rotRate, glm::vec3 axisisRot, unsigned int matIdx, unsigned int matDataIdx);
 
-        inline glm::mat4 GetActualModelMat() const { return actualModelMat; } 
-        inline glm::vec3 GetActualModelWorldCoords() const { return actualModelWorldCoords; }
+        void AddTranslation(float translationRate, glm::vec3 translationDir, unsigned int matIdx);
+        void AddTranslations(std::vector<float> translationRates, std::vector<glm::vec3> translationDirs,  unsigned int matIdx);
+        void ReplaceTranslation(float rotRate, glm::vec3 axisisRot, unsigned int matIdx, unsigned int matDataIdx);
 
-        inline float* ModelMatData() { return &actualModelMat[0][0]; }
+        void UpdateAll();
+        void UpdateOne(unsigned int matIdx);
+
+        void ScaleOne(glm::vec3 scale, unsigned int matIdx);
+        void ScaleAll(glm::vec3 scale);
+
+        inline float* data()
+        {
+            return glm::value_ptr(transformationMatrices.front());
+        }
 
     private:
-        glm::mat4 actualModelMat = glm::mat4(1.0f);
-        glm::vec3 actualModelWorldCoords = glm::vec3(0.0f);
+        void UpdateModel(unsigned int ID);
+
+        struct OneMatrixData
+        {
+            OneMatrixData()
+            {
+                angleRotRates = {};
+                axisRots = {};
+                translateRates = {};
+                translateDirs = {};
+            }
+
+            std::vector<float> angleRotRates;
+            std::vector<glm::vec3> axisRots;
+
+            std::vector<float> translateRates;
+            std::vector<glm::vec3> translateDirs;
+        };
+
+        std::vector<OneMatrixData> transformData;
+        std::vector<glm::mat4> transformationMatrices;
 };
 
 #endif

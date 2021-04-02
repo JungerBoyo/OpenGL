@@ -54,6 +54,15 @@ VBO::VBO(GLsizeiptr _vertexDataSize, GLfloat* _vertexData, GLsizeiptr _colorData
     }
 }
 
+VBO::VBO(GLsizeiptr _rawSize, GLfloat* _rawData)
+{
+    GenBuffers(1, GL_ARRAY_BUFFER);
+    this->buffIdx = buffers[GL_ARRAY_BUFFER]->size() - 1;
+    this->Bind();
+
+    PushData(GL_ARRAY_BUFFER, _rawSize, &_rawData);
+}
+
 void VBO::Bind()
 {
     BindBuffer(GL_ARRAY_BUFFER, this->buffIdx);
