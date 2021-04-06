@@ -12,7 +12,7 @@ set(SDL2_linkers -lSDL2)
 
 
 set(SOURCES
-        src/exercises/instancedRendering.cpp
+        src/exercises/FrameRenderBuffers.cpp
 
         src/headers/Buffers.hpp
         src/Buffers.cpp

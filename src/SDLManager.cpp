@@ -47,7 +47,7 @@ void SDLManager::EventPolling()
 
 void SDLWindow::InitOpenGLWindow()
 {
-    this-> win = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1000, 1000,  SDL_WINDOW_OPENGL);
+    this-> win = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 1024,  SDL_WINDOW_OPENGL);
     this-> context = SDL_GL_CreateContext(win); 
 }
 
