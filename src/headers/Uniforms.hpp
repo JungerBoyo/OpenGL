@@ -16,6 +16,8 @@ class Uniforms
         void AddUniform(const std::string& name, std::shared_ptr<Shader>& shader);
         void BindUniformMat4(const int& idx, const int& count, bool transpose, GLfloat* data);
         void BindUniformMat1x2(const int& idx, const int& count, bool transpose, GLfloat* data);
+        void BindUniformMat4x2(const int& idx, const int& count, bool transpose, GLfloat* data);
+        void BindUniformMat3x2(const int& idx, const int& count, bool transpose, GLfloat* data);
         void BindUniformVec4(const int& idx, const int& count, GLfloat* data);
         void BindUniformConstUI(const int& idx, GLuint data);
 

@@ -31,6 +31,18 @@ void Uniforms::BindUniformMat1x2(const int& _idx, const int& _count, bool _trans
     ASSERT(glUniformMatrix2fv(uniforms[_idx], _count, _transpose, _data));
 }
 
+void Uniforms::BindUniformMat4x2(const int& _idx, const int& _count, bool _transpose, GLfloat* _data)
+{
+    ASSERT(glUniformMatrix4x2fv(uniforms[_idx], _count, _transpose, _data));
+}
+
+void Uniforms::BindUniformMat3x2(const int& _idx, const int& _count, bool _transpose, GLfloat* _data)
+{
+    ASSERT(glUniformMatrix3x2fv(uniforms[_idx], _count, _transpose, _data));
+}
+
+
+
 void Uniforms::BindUniformVec4(const int& _idx, const int& _count, GLfloat* _data)
 {
     ASSERT(glUniform4fv(uniforms[_idx], _count, _data));
