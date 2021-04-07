@@ -39,19 +39,19 @@ class BufferManager
 template<typename DataType>
 void BufferManager::PushSubdata(GLenum _bufferType, GLsizeiptr sizeOfData, DataType _data, GLenum _usage, GLintptr _offset)
 {
-    ASSERT(glBufferSubData(_bufferType, _offset, sizeOfData, *_data));
+    DEBUG(glBufferSubData(_bufferType, _offset, sizeOfData, *_data));
 }
 
 template<typename DataType>
 void BufferManager::PushData(GLenum _bufferType, GLsizeiptr _sizeOfData, DataType _data, GLenum _usage)
 {
-    ASSERT(glBufferData(_bufferType, _sizeOfData, *_data, _usage));
+    DEBUG(glBufferData(_bufferType, _sizeOfData, *_data, _usage));
 }
 
 template<typename DataType>
 void BufferManager::PushData(GLuint _bufferIndex, GLuint _bufferType, DataType _data, GLenum _usage)
 {
-    ASSERT(glNamedBufferData(buffers[_bufferType]->at(_bufferIndex), sizeof(*_data), *_data, _usage));
+    DEBUG(glNamedBufferData(buffers[_bufferType]->at(_bufferIndex), sizeof(*_data), *_data, _usage));
 }
     
 

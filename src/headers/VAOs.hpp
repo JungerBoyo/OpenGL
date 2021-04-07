@@ -20,7 +20,7 @@ class VAOsManager
 
         inline void VertexAttDivisor(GLuint idx, GLuint divisor)
         {
-            ASSERT(glVertexAttribDivisor(idx, divisor));
+            DEBUG(glVertexAttribDivisor(idx, divisor));
         }
 
     public:

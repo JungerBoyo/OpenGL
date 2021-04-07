@@ -3,7 +3,7 @@ project(OpenGL)
 
 set(CMAKE_CXX_STANDARD 20)
 include_directories(OpenGL "/usr/include/glm")
-include_directories(OpenGL "/usr/include/stb_image.h")
+include_directories(OpenGL "/usr/include/stb")
 
 set(OpenGL_linkers -lglut -lGLU -lGL -lGLEW)
 set(SDL2_linkers -lSDL2)
@@ -30,12 +30,13 @@ set(SOURCES
         src/transformations.cpp
 
         src/headers/ErrorGL.hpp
-        src/exercises/instancedRendering.cpp src/exercises/Textures01.cpp
 
         res/stbimg/stb_image.cpp
+        textures/TextureImg.cpp
+        textures/TextureImg.h
         )
 
-add_executable(OpenGL ${SOURCES})
+add_executable(OpenGL ${SOURCES} textures/TextureImg.cpp textures/TextureImg.h)
 
 target_link_libraries(OpenGL ${OpenGL_linkers})
 target_link_libraries(OpenGL ${SDL2_linkers})

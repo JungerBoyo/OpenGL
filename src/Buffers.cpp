@@ -13,21 +13,21 @@ void BufferManager::GenBuffers(int _count, GLenum _bufferType)
     else
         buffers[_bufferType]->push_back(0);
     
-    ASSERT(glGenBuffers(_count, &buffers[_bufferType]->back())); 
+    DEBUG(glGenBuffers(_count, &buffers[_bufferType]->back()));
 }
 
 void BufferManager::BindBuffer(GLenum _bufferType, GLuint _bufferIndex)
 {
-    ASSERT(glBindBuffer(_bufferType, buffers[_bufferType]->at(_bufferIndex)));
+    DEBUG(glBindBuffer(_bufferType, buffers[_bufferType]->at(_bufferIndex)));
 }
 
 void BufferManager::UnbindBuffer(GLenum _bufferType)
 {
-    ASSERT(glBindBuffer(_bufferType, 0));
+    DEBUG(glBindBuffer(_bufferType, 0));
 }
 void BufferManager::AllocateData(GLuint _bufferType, GLsizeiptr _sizeOfData, GLenum _usage)
 {
-    ASSERT(glBufferData(_bufferType, _sizeOfData, NULL, _usage));
+    DEBUG(glBufferData(_bufferType, _sizeOfData, NULL, _usage));
 }
 
 BufferManager::~BufferManager()

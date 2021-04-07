@@ -5,8 +5,8 @@
 #include "../headers/ErrorGL.hpp"
 #include "../headers/transformations.hpp"
 #include "../headers/SDLManager.hpp"
+#include "../../textures/TextureImg.h"
 
-#include <stb_image.h>
 #include <stdexcept>
 #include <vector>
 #include <memory>
@@ -96,19 +96,19 @@ int main(int argc, char** argv)
 
     //------------------------------------------------------------------------------------------------------------------
 
-    int width, height, channels;
-    unsigned char* TextureImg = stbi_load("/home/carbonowy/CLionProjects/OpenGL/textures/Tex01.png", &width, &height, &channels, 0);
+    auto texImg = std::make_unique<TextureImg>("/home/carbonowy/CLionProjects/OpenGL/textures/tex01mp/Tex01.png", true);
+    texImg->SaveMipMapPackage("/home/carbonowy/CLionProjects/OpenGL/textures/tex01mp");
 
     //------------------------------------------------------------------------------------------------------------------
     GLuint tex01;
-    ASSERT(glGenTextures(1, &tex01));
-    ASSERT(glBindTexture(GL_TEXTURE_2D, tex01));
-    ASSERT(glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height));
-    ASSERT(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, (const void*) TextureImg));
+    DEBUG(glGenTextures(1, &tex01));
+    DEBUG(glBindTexture(GL_TEXTURE_2D, tex01));
+    DEBUG(glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, texImg->Width(6), texImg->Height(6)));
+    DEBUG(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texImg->Width(6), texImg->Height(6), GL_RGBA, GL_UNSIGNED_BYTE, (const void*) texImg->DataMM(6)));
 
     GLuint sampler01;
-    ASSERT(glGenSamplers(1, &sampler01));
-    ASSERT(glBindSampler(tex01, sampler01));
+    DEBUG(glGenSamplers(1, &sampler01));
+    DEBUG(glBindSampler(tex01, sampler01));
 
     while(!WIN->isClosed)
     {

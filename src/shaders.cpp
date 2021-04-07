@@ -87,10 +87,10 @@ GLuint Shader::CompileShader(GLuint _shader, const std::string& _path, GLuint _s
 
 void Shader::Bind()
 {
-    ASSERT(glUseProgram(program));
+    DEBUG(glUseProgram(program));
 }
 
 void Shader::Unbind()
 {
-    ASSERT(glUseProgram(0));
+    DEBUG(glUseProgram(0));
 }

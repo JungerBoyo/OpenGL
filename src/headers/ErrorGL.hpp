@@ -18,7 +18,7 @@ static void GetError(const char* func, const char* file, int line)
     }
 }
 
-#define ASSERT(x)\
+#define DEBUG(x)\
                     ClearError();\
                     x;\
                     GetError(#x, __FILE__, __LINE__);
