@@ -1,5 +1,5 @@
-#ifndef OPENGL_TEXTUREIMG_H
-#define OPENGL_TEXTUREIMG_H
+#ifndef OPENGL_TEXTUREIMG_HPP
+#define OPENGL_TEXTUREIMG_HPP
 
 #include <stb/stb_image.h>
 #include <stb/stb_image_write.h>
@@ -8,10 +8,10 @@
 #include <array>
 #include <iostream>
 
-const std::array<int, 14> resLookUp
+const std::array<int, 15> resLookUp
 {
-        2,     4,    8,     16,
-        32,    64,   128,  256,    512,
+            1,    2,     4,    8,     16,
+           32,   64,   128,  256,    512,
         1024, 2048, 4096, 8192, 16384
 };
 

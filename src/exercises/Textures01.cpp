@@ -97,14 +97,20 @@ int main(int argc, char** argv)
     //------------------------------------------------------------------------------------------------------------------
 
     auto texImg = std::make_unique<TextureImg>("/home/carbonowy/CLionProjects/OpenGL/textures/tex01mp/Tex01.png", true);
-    texImg->SaveMipMapPackage("/home/carbonowy/CLionProjects/OpenGL/textures/tex01mp");
 
     //------------------------------------------------------------------------------------------------------------------
     GLuint tex01;
     DEBUG(glGenTextures(1, &tex01));
     DEBUG(glBindTexture(GL_TEXTURE_2D, tex01));
-    DEBUG(glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, texImg->Width(6), texImg->Height(6)));
-    DEBUG(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texImg->Width(6), texImg->Height(6), GL_RGBA, GL_UNSIGNED_BYTE, (const void*) texImg->DataMM(6)));
+    DEBUG(glTexStorage2D(GL_TEXTURE_2D, texImg->mipMapLvls(), GL_RGBA8, texImg->Width(), texImg->Height()));
+
+
+    for(int i=0; i<texImg->mipMapLvls(); i++)
+    {
+        DEBUG(glTexSubImage2D(GL_TEXTURE_2D, i, 0, 0, texImg->Width(i), texImg->Height(i), GL_RGBA, GL_UNSIGNED_BYTE,
+                              (const void *) texImg->DataMM(i)));
+    }
+
 
     GLuint sampler01;
     DEBUG(glGenSamplers(1, &sampler01));

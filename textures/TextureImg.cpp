@@ -26,26 +26,28 @@ void TextureImg::CreateMipMap(unsigned int _numOfLevels)
         return;
     }
 
-    mipMapLevels = _numOfLevels;
+    mipMapLevels = _numOfLevels + 1;
     mipMapBmpPtrs = new unsigned char*[mipMapLevels];
 
-    mipMapBmpPtrs[0] = new unsigned char[resLookUp[_numOfLevels - 1] * resLookUp[_numOfLevels - 1] * channels];
+    mipMapBmpPtrs[0] = new unsigned char[resLookUp[_numOfLevels] * resLookUp[_numOfLevels] * channels];
     stbir_resize_uint8(mainBmpPtr, width, height, channels*width,
-                       mipMapBmpPtrs[0], resLookUp[_numOfLevels - 1], resLookUp[_numOfLevels - 1],
-                       channels*resLookUp[_numOfLevels - 1], channels);
+                       mipMapBmpPtrs[0], resLookUp[_numOfLevels], resLookUp[_numOfLevels],
+                       channels*resLookUp[_numOfLevels], channels);
 
-    for(unsigned int i = 1; i < _numOfLevels; i++)
+    width = height = resLookUp[_numOfLevels];
+
+    for(unsigned int i = 1; i <= _numOfLevels; i++)
     {
-        mipMapBmpPtrs[i] = new unsigned char[resLookUp[_numOfLevels - i - 1] * resLookUp[_numOfLevels - i - 1] * channels];
+        mipMapBmpPtrs[i] = new unsigned char[resLookUp[_numOfLevels - i] * resLookUp[_numOfLevels - i] * channels];
 
         stbir_resize_uint8(mipMapBmpPtrs[i - 1],
+                           resLookUp[_numOfLevels - i + 1],
+                           resLookUp[_numOfLevels - i + 1],
+                           channels * resLookUp[_numOfLevels - i + 1],
+                           mipMapBmpPtrs[i],
                            resLookUp[_numOfLevels - i],
                            resLookUp[_numOfLevels - i],
                            channels * resLookUp[_numOfLevels - i],
-                           mipMapBmpPtrs[i],
-                           resLookUp[_numOfLevels - i - 1],
-                           resLookUp[_numOfLevels - i - 1],
-                           channels * resLookUp[_numOfLevels - i - 1],
                            channels);
     }
 
