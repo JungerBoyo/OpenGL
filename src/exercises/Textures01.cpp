@@ -1,3 +1,4 @@
+/*
 #include "../headers/Buffers.hpp"
 #include "../headers/Uniforms.hpp"
 #include "../headers/shaders.hpp"
@@ -5,7 +6,7 @@
 #include "../headers/ErrorGL.hpp"
 #include "../headers/transformations.hpp"
 #include "../headers/SDLManager.hpp"
-#include "../../textures/TextureImg.h"
+#include "../../textures/TextureImg.hpp"
 
 #include <stdexcept>
 #include <vector>
@@ -31,6 +32,24 @@ std::array<GLfloat, 20> verticesCone =
      1.0f, -1.0f,-1.0f, 1.0f,
      0.0f,  1.5f, 0.0f, 1.0f
 };
+
+GLuint indicesCube[] =
+{
+    0, 1, 2,
+    0, 3, 1, // front
+    3, 5, 1,
+    3, 7, 5, // right
+    2, 5, 6,
+    2, 1, 5, // top
+    4, 2, 6,
+    4, 0, 2, // left
+    4, 3, 0,
+    4, 7, 3, // bottom
+    7, 6, 5,
+    7, 4, 6
+};
+
+
 int main(int argc, char** argv)
 {
 
@@ -60,7 +79,7 @@ int main(int argc, char** argv)
     );
     shaderCone->Bind();
 
-    auto uniformCone = std::make_unique<Uniforms>((std::string[5]){"uModel", "uView", "uProj", "uSmplr01", "uTexCoords"}, 5, shaderCone);
+    auto uniformCone = std::make_unique<Uniforms>((std::string[6]){"uModel", "uView", "uProj", "uSmplr01", "uTexCoords", "uOffset"}, 6, shaderCone);
 
     glm::mat4 proj = glm::perspective(M_PIf32*0.38f, 1.0f, 0.5f, 100.0f);
     auto camera = std::make_shared<Camera>();
@@ -96,33 +115,50 @@ int main(int argc, char** argv)
 
     //------------------------------------------------------------------------------------------------------------------
 
-    auto texImg = std::make_unique<TextureImg>("/home/carbonowy/CLionProjects/OpenGL/textures/tex01mp/Tex01.png", true);
+    auto texImg1 = std::make_unique<TextureImg>("/home/carbonowy/CLionProjects/OpenGL/textures/tex01mp/Tex01.png", true);
+    auto texImg2 = std::make_unique<TextureImg>("/home/carbonowy/CLionProjects/OpenGL/textures/tex03mp/tex03.png", true);
 
     //------------------------------------------------------------------------------------------------------------------
-    GLuint tex01;
-    DEBUG(glGenTextures(1, &tex01));
-    DEBUG(glBindTexture(GL_TEXTURE_2D, tex01));
-    DEBUG(glTexStorage2D(GL_TEXTURE_2D, texImg->mipMapLvls(), GL_RGBA8, texImg->Width(), texImg->Height()));
-
-
-    for(int i=0; i<texImg->mipMapLvls(); i++)
+    GLuint tex012[2];
+    DEBUG(glGenTextures(2, tex012));
+    DEBUG(glBindTexture(GL_TEXTURE_2D, tex012[0]));
+    DEBUG(glTexStorage2D(GL_TEXTURE_2D, texImg1->mipMapLvls(), GL_RGBA8, texImg1->Width(), texImg1->Height()));
+    for(int i=0; i < texImg1->mipMapLvls(); i++)
     {
-        DEBUG(glTexSubImage2D(GL_TEXTURE_2D, i, 0, 0, texImg->Width(i), texImg->Height(i), GL_RGBA, GL_UNSIGNED_BYTE,
-                              (const void *) texImg->DataMM(i)));
+        DEBUG(glTexSubImage2D(GL_TEXTURE_2D, i, 0, 0, texImg1->Width(i), texImg1->Height(i), GL_RGBA, GL_UNSIGNED_BYTE,
+                              (const void *) texImg1->DataMM(i)));
     }
 
+    DEBUG(glBindTexture(GL_TEXTURE_2D, tex012[1]));
+    DEBUG(glTexStorage2D(GL_TEXTURE_2D, texImg2->mipMapLvls(), GL_RGBA8, texImg2->Width(), texImg2->Height()));
+    for(int i=0; i < texImg2->MipMapLvls(); i++)
+    {
+        DEBUG(glTexSubImage2D(GL_TEXTURE_2D, i, 0, 0, texImg2->Width(i), texImg2->Height(i), GL_RGBA, GL_UNSIGNED_BYTE,
+                              (const void *) texImg2->DataMM(i)));
+    }
 
-    GLuint sampler01;
-    DEBUG(glGenSamplers(1, &sampler01));
-    DEBUG(glBindSampler(tex01, sampler01));
+    GLuint sampler01[2];
+    DEBUG(glGenSamplers(2, sampler01));
+    DEBUG(glBindSampler(tex012[0], sampler01[0]));
+    DEBUG(glBindSampler(tex012[1], sampler01[1]));
+
+    glm::vec4 offsets[2] = {{-6.0f, 0.0f, 0.0f, 0.0f} , {6.0f, 0.0f, 0.0f, 0.0f}};
 
     while(!WIN->isClosed)
     {
         glClearColor(0.3, 0.2, 0.2, 1.0);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+
         uniformCone->BindUniformMat4(0, 1, GL_FALSE, coneMat->data());
         uniformCone->BindUniformMat4(1, 1, GL_FALSE, camera->CamMatData());
+
+        uniformCone->BindUniformVec4(5, 1, &offsets[0].x);
+        glBindTexture(GL_TEXTURE_2D, tex012[0]);
+        glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
+
+        uniformCone->BindUniformVec4(5, 1, &offsets[1].x);
+        glBindTexture(GL_TEXTURE_2D, tex012[1]);
         glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 
         SDL.EventPolling();
@@ -132,5 +168,5 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
+*/
 

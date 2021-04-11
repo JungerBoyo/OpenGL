@@ -16,7 +16,7 @@ void Uniforms::AddUniform(const std::string& _name, std::shared_ptr<Shader>& _sh
 {
     int location = glGetUniformLocation(_shader->program,  _name.c_str());
     if(location == -1)
-        std::cerr << "OpenGL Error::Uniforms::Uniforms(..) : invalid uniform name, '" << _name <<"'\n";
+        std::cerr << "OpenGL Error::Uniforms::AddUniform(..) : invalid uniform name, '" << _name <<"'\n";
     else
         uniforms.push_back(location);
 }
@@ -41,8 +41,6 @@ void Uniforms::BindUniformMat3x2(const int& _idx, const int& _count, bool _trans
     DEBUG(glUniformMatrix3x2fv(uniforms[_idx], _count, _transpose, _data));
 }
 
-
-
 void Uniforms::BindUniformVec4(const int& _idx, const int& _count, GLfloat* _data)
 {
     DEBUG(glUniform4fv(uniforms[_idx], _count, _data));
@@ -51,4 +49,9 @@ void Uniforms::BindUniformVec4(const int& _idx, const int& _count, GLfloat* _dat
 void Uniforms::BindUniformConstUI(const int& _idx, GLuint _data)
 {
     DEBUG(glUniform1ui(uniforms[_idx], _data));
+}
+
+void Uniforms::BindUniformTextureSampler2D(const int &_idx, GLint _textureUnit)
+{
+    glUniform1i(uniforms[_idx], _textureUnit);
 }

@@ -9,7 +9,7 @@ set(OpenGL_linkers -lglut -lGLU -lGL -lGLEW)
 set(SDL2_linkers -lSDL2)
 
 set(SOURCES
-        src/exercises/Textures01.cpp
+        src/exercises/Textures02.cpp
 
         src/headers/Buffers.hpp
         src/Buffers.cpp
@@ -33,10 +33,10 @@ set(SOURCES
 
         res/stbimg/stb_image.cpp
         textures/TextureImg.cpp
-        textures/TextureImg.h
-        )
+        textures/TextureImg.hpp
+     )
 
-add_executable(OpenGL ${SOURCES} textures/TextureImg.cpp textures/TextureImg.h)
+add_executable(OpenGL ${SOURCES} textures/TextureImg.cpp textures/TextureImg.hpp)
 
 target_link_libraries(OpenGL ${OpenGL_linkers})
 target_link_libraries(OpenGL ${SDL2_linkers})

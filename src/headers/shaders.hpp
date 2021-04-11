@@ -15,6 +15,7 @@ class Shader
 
         void Bind();
         void Unbind();
+        inline int getProgramID() { return program; }
 
     private:  
         std::stringstream ParseShader(const std::string& shaderPath);

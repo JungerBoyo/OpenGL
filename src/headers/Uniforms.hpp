@@ -20,6 +20,7 @@ class Uniforms
         void BindUniformMat3x2(const int& idx, const int& count, bool transpose, GLfloat* data);
         void BindUniformVec4(const int& idx, const int& count, GLfloat* data);
         void BindUniformConstUI(const int& idx, GLuint data);
+        void BindUniformTextureSampler2D(const int& idx, GLint textureUnit);
 
     private:
         std::vector<int> uniforms;   
